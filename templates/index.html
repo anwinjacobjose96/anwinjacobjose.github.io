@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block content %}
+<header>
+    <h1>Periods Tracker</h1>
+    <div class="user-info">
+        <span>Welcome, {{ session.username }}</span>
+        <a href="{{ url_for('logout') }}" class="logout-btn">Logout</a>
+    </div>
+</header>
+
+<main>
+    <section class="today-section">
+        <h2>Today</h2>
+        <p>{{ current_date }}</p>
+        <div class="phase-info">
+            <span class="phase-tag">Luteal Phase</span>
+            <span class="phase-tag">Post-ovulation</span>
+        </div>
+    </section>
+
+    <section class="add-period">
+        <h2>Add New Period</h2>
+        <form method="POST">
+            <div class="form-group">
+                <label for="start_date">Period Start Date:</label>
+                <input type="date" id="start_date" name="start_date" required>
+            </div>
+            <button type="submit" class="btn-primary">Add Period</button>
+        </form>
+    </section>
+
+    <section class="stats-section">
+        <h2>Cycle Statistics</h2>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Average Cycle Length</h3>
+                <p class="stat-value">
+                    {% if stats.avg_cycle_length %}
+                        {{ stats.avg_cycle_length }} days
+                    {% else %}
+                        Not enough data
+                    {% endif %}
+                </p>
+            </div>
+            <div class="stat-card">
+                <h3>Next Expected Period</h3>
+                <p class="stat-value">
+                    {% if stats.next_period %}
+                        {{ stats.next_period }}
+                    {% else %}
+                        Not enough data
+                    {% endif %}
+                </p>
+            </div>
+            <div class="stat-card">
+                <h3>Last Recorded Period</h3>
+                <p class="stat-value">
+                    {% if stats.last_period %}
+                        {{ stats.last_period }}
+                    {% else %}
+                        No data
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section class="past-periods">
+        <div class="section-header">
+            <h2>Past Periods</h2>
+            {% if periods %}
+            <form action="{{ url_for('clear_all_periods') }}" method="POST" class="clear-form">
+                <button type="submit" class="btn-clear" onclick="return confirm('Are you sure you want to clear all period data? This action cannot be undone.')">Clear All</button>
+            </form>
+            {% endif %}
+        </div>
+        
+        {% if periods %}
+            <div class="periods-list">
+                {% for period in periods %}
+                    <div class="period-item">
+                        <span class="period-date">{{ period.start_date }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="no-data">No period data recorded yet.</p>
+        {% endif %}
+    </section>
+</main>
+{% endblock %}
